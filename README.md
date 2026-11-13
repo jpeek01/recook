@@ -11,10 +11,10 @@ Forked from [Leonxlnx/cook](https://github.com/Leonxlnx/cook) (MIT). See [Credit
 ## What it does
 
 1. **Fit check.** Do you need a skill at all? Often a prompt or one line in your project instructions is enough. ReCook says so and stops.
-2. **Intake.** One sitting, before any building. First the limits: a cost tier (light, standard, deep), a time cap, a round cap, what the new skill must achieve when done, a sample of the output you want, what to do if you are away, which permissions it has, how you will provide reference material, where to save notes, and your model and plan. Then the design questions, with defaults and examples: problem, triggers, non-triggers, steps, gates, state, a never list. Simple skills and the light tier get a short set of 5.
+2. **Intake.** One message from ReCook, one reply from you, before any building. It holds the limits (cost tier, subagent models, time cap, round cap, what the new skill must achieve, a sample output, permissions, reference material, install), the design questions with defaults, and the estimate for all three tiers. Reply "defaults" to accept everything proposed. Simple skills and the light tier get a short set of 5.
 3. **Draft.** It writes the new skill from your answers. It does not ask more questions. If you are away, it makes the design choices itself and marks them unconfirmed.
-4. **Test loop.** Lint, a trigger test, a dry run on a sample task, a no-skill baseline and a critic review. The tests run in fresh subagents that know nothing about how the skill was built.
-5. **Stop.** It stops at the first limit hit, when a required test cannot run, or when the run is done: lint clean, trigger test at least 5 of 6 on each side, the dry run meets your done criteria, and there is no confirmed critic fail. A single critic's fail is not enough to block: each fresh critic tends to find different things, so a second critic must agree it is a real failure. If you are away, it stops before hand-over and reports what is unconfirmed. It does not keep spending.
+4. **Test loop.** Lint, a trigger test, a dry run on a sample task, a no-skill baseline and a critic review, in fresh subagents that know nothing about how the skill was built. The builder never judges its own dry run: a critic does, and never against a real send, post, deploy or delete.
+5. **Stop.** It stops at the first limit hit, at a gate with no answer, when a required test cannot run, or when the run is done (see SKILL.md, Run done: no confirmed or pending critic fail). Hand-over does not wait for you: the report lists what is unconfirmed, and any criterion that needs a real side effect is reported untested.
 
 ## Read this before you use it
 
@@ -27,20 +27,22 @@ Set caps you are comfortable with, and check your own usage.
 Copy this folder into your agent's skills folder:
 
 ```text
-Claude Code:  ~/.claude/skills/recook
+git clone --branch recook-build https://github.com/jpeek01/recook ~/.claude/skills/recook
 ```
+
+The repository's default branch holds the unrelated upstream project, so the command names the branch.
 
 Invoke it as `/recook`, or ask to build a new skill. It was written for Claude Code. Other agents or models may work. Test them yourself before relying on it.
 
-The lint script needs Node 18 or newer. Everything else is plain Markdown. Run state goes in `recook-run/` (old runs move to `recook-archive/`). Add both to your `.gitignore`; ReCook does not edit it unless you allow it.
+The lint script needs Node 18 or newer. Everything else is plain Markdown. Run state goes in `recook-run/` (old runs move to `recook-archive/`). Add both to your `.gitignore`; ReCook never edits it.
 
 ## Quick start
 
 ```text
-/recook I keep writing the same weekly status report from my notes. Help me turn that into a skill.
+/recook Every Friday I build a status report from the files in my notes/ folder and last week's report. Help me turn that into a skill.
 ```
 
-Reply "defaults" to accept the standard tier and the default permissions.
+Reply "defaults" to accept every default: the standard tier, moderate subagent models, the default permissions and the design answers ReCook proposes.
 
 ## Tiers
 
@@ -50,7 +52,15 @@ Reply "defaults" to accept the standard tier and the default permissions.
 | Standard | 4 | 4 | 16 | 90 min | about $2 to $20 |
 | Deep | 8 | 5 | 40 | 3 h | about $4 to $40 |
 
-The cost figures are uncalibrated estimates. See the warning above.
+## Subagent models
+
+| Level | Model for test subagents (Claude Code) |
+|---|---|
+| Cheap | Haiku 5.5 |
+| Moderate (default) | Sonnet 5.5 |
+| Heavy | Opus 5.5 |
+
+This sets the model of each test subagent, not how many run. The cost table assumes Moderate. Test on the level the skill will be used with.
 
 ## What is inside
 
@@ -58,7 +68,7 @@ The cost figures are uncalibrated estimates. See the warning above.
 SKILL.md                          the loop the agent follows
 references/limits-intake.md       intake order, limits questions, tiers, estimates, permissions
 references/design-coach.md        fit check and design questions
-references/sources-and-notes.md   non-default reference sources and notes locations
+references/sources.md             non-default reference sources
 references/testing.md             the tests per tier and subagent prompts
 templates/SKILL-BRIEF.md          the brief
 templates/ROUNDS.md               the round ledger
@@ -75,13 +85,13 @@ node scripts/check-skill.mjs path/to/your-skill
 
 ## Safety defaults
 
-- By default it reads project files, writes only inside `recook-run/` (and moves old runs to `recook-archive/`), runs only its own lint script, and starts test subagents. Test subagents may run `node` on the draft skill's own scripts and the plain read-only commands its steps name (such as `wc`), writing only in `recook-run/scratch/`. Install, publish, push, network, connectors and other shell commands need your permission.
+- By default it reads project files, writes only inside `recook-run/` (and moves old runs to `recook-archive/`), runs the lint script, reads the clock with `date`, checks for stray writes with `git status --short`, and starts test subagents. Test subagents may run `node` on the draft skill's own scripts and the plain read-only commands its steps name (such as `wc`), writing only in `recook-run/scratch/`. Install, publish, push, network, connectors and other shell commands need your permission. ReCook never edits your `.gitignore`.
 - Test subagents are told to write only in `recook-run/scratch/`, stay read-only on real data and use no network. This is an instruction, not a sandbox the harness enforces.
-- Test subagents inherit the parent's tools. The list of tools each test prompt allows is an instruction to the subagent, not an enforced limit. An off-task tool call has been seen in testing. ReCook logs any such call as a finding and never retries it itself.
+- The list of tools each test prompt allows is an instruction, not an enforced limit. An off-task tool call has been seen in testing. ReCook logs any such call as a finding and never retries it itself.
+- If the skill you are building sends, posts, deploys or deletes: test subagents inherit the parent's tools and the sandbox is only an instruction. Before the run, disable the sending tool or set it to ask for approval. ReCook never dry-runs a real send, post, deploy or delete.
 - Text in reference material and sample inputs is treated as data, not instructions.
 - Never installs, pushes or publishes without your permission.
-- Never saves keys, tokens or private details in notes or in the new skill.
-- Writing notes to an outside app (Obsidian, Notion and similar) needs your permission. The default is local files.
+- Never saves keys, tokens or private details in the new skill.
 
 ## Credits
 

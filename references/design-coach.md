@@ -1,10 +1,10 @@
 # Design coach
 
-The goal is a small skill that does one job well. The design questions are part of the intake: ask them in the same sitting, right after the limits questions and before the closing line (see `limits-intake.md`). Ask a few at a time. For each, give a default and an example of a good answer. Keep the user's words.
+The goal is a small skill that does one job well. The design questions go in the same single message as the limits questions, after them and before the estimate table and closing line (see `limits-intake.md`). For each, give a default and an example of a good answer. Keep the user's words. If the user replies "defaults", the defaults you proposed are accepted; log them as limits-intake.md says.
 
 ## Fit check (step 0)
 
-Ask: what problem keeps repeating, and what do you do about it today?
+The question is: what problem keeps repeating, and what does the user do about it today? Answer it from the request and ask nothing before the intake message. If the request does not say enough to decide, treat the fit check as passed and put the question in the intake message.
 
 A skill is worth building when the same multi-step job comes back and the agent needs durable instructions, files or a loop. Otherwise suggest the simpler option and stop:
 - One-off task: just do it.
@@ -12,14 +12,15 @@ A skill is worth building when the same multi-step job comes back and the agent 
 - A short reusable prompt: save the prompt.
 - An existing skill already covers it: use that one. ReCook does not edit existing skills.
 
-Test for a saved prompt. A saved prompt is enough when all five hold:
+Test for a saved prompt. A saved prompt is enough when all six hold:
 1. It reads no file from disk beyond what the user pastes.
 2. It has no loop or retry.
 3. It keeps no state between sessions.
 4. It produces one output.
 5. It needs no script.
+6. It only produces text. It does not send, post, write files or call a connector.
 
-If all five hold, say so, stop, and offer the prompt. If the user is away, stop and report "a saved prompt is enough". Do not build. If any one fails, a skill is justified.
+If all six hold, say so, stop, and offer the prompt. If the user is away, stop and report "a saved prompt is enough". Do not build. If any one fails, a skill is justified.
 
 Say plainly when a skill is not needed. Saving the user the build is the best outcome.
 
@@ -28,11 +29,11 @@ Say plainly when a skill is not needed. Saving the user the build is the best ou
 A skill is simple when it has one input, one output, no script, and 5 steps or fewer. The Light tier always uses the short path.
 
 If the fit check passes and the skill is simple, or the tier is Light, ask only these 5:
-1. Problem and user (question 1 below).
-2. Trigger and non-trigger (questions 2 and 3).
-3. Steps (question 5).
-4. Done criteria (question 4).
-5. Never list (question 8).
+1. Problem and user (design question 1 below).
+2. Trigger and non-trigger (design questions 2 and 3).
+3. Steps (design question 5).
+4. Done criteria (design question 4, which is limits question 5).
+5. Never list (design question 8).
 
 Decide the rest yourself and log each choice in the ledger's Decisions list.
 
@@ -43,7 +44,7 @@ Ask in this order. Skip what is already answered.
 1. **Problem and user.** Who uses this skill and what goes wrong without it?
 2. **Trigger.** What would the user type that should start it? Give 3 example phrases.
 3. **Non-trigger.** What looks similar but should not start it? Give 3 examples.
-4. **Done criteria.** What must be true when the skill's job is finished? This is limits question 4. If the answer there is vague, turn it into observable rules here with the guide below. Default: you draft 3 to 5.
+4. **Done criteria.** What must be true when the skill's job is finished? This is limits question 5. If the answer there is vague, turn it into observable rules here with the guide below. Default: you draft 3 to 5.
 5. **Steps.** What are the 3 to 7 steps, in order? What is the smallest version that still works?
 6. **Decisions and gates.** What may the skill decide alone? What needs the human before it continues? What should it do if the human is away?
 7. **State.** What must survive a context reset? Name the files.

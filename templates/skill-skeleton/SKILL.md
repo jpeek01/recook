@@ -31,7 +31,7 @@ description: [One or two sentences: what it does, when to use it, and when not t
 ## Never
 
 - [Real dangers only.]
-- Put keys, tokens or private details in output or notes.
+- Put keys, tokens or private details in output.
 
 ## Files in this skill
 
