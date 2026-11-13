@@ -50,13 +50,13 @@ Write the draft in `recook-run/draft/<skill-name>/` from `templates/skill-skelet
 ### 3. Test loop
 A round is one pass of lint, the tests the tier allows, and one fix. Each round, in order:
 1. Lint: `node <this skill's folder>/scripts/check-skill.mjs recook-run/draft/<skill-name>`.
-2. Run the tests the tier allows, from `references/testing.md`, in fresh subagents. Stay within the per-round subagent run limit.
+2. Run the tests the tier allows, from `references/testing.md`, in fresh subagents. Include a second critic when the tier gives one (testing.md, Critic review). Stay within the per-round subagent run limit.
 3. Run the stop check. If it says continue, fix the weakest failure. Change one thing.
-4. Optional, only if the tier leaves a spare run (`references/testing.md`): retest that one test. Otherwise the next round checks the fix.
+4. Optional, only if the tier leaves a spare run that a second critic did not use (`references/testing.md`): retest that one test. Otherwise the next round checks the fix.
 5. Log the round in `recook-run/ROUNDS.md`: what changed, what was measured, what was only judged, what was not run.
 
 ### 4. Hand over
-Show the user the finished skill, the test results, the ledger and anything marked unconfirmed. Install or publish only if BRIEF.md allows it and the user confirms. Set `Status: finished`.
+Show the user the finished skill, the test results, the ledger, every unconfirmed critic fail and anything marked unconfirmed. Install or publish only if BRIEF.md allows it and the user confirms. Set `Status: finished`.
 
 ## Run done
 
@@ -64,7 +64,9 @@ The run is done when all of these hold for the current draft. This is the defaul
 - Lint: 0 errors.
 - Trigger test: at least 5 of 6 correct on each side.
 - Dry run: meets the new skill's done criteria in BRIEF.md.
-- Critic review: no item marked fail.
+- Critic review: no confirmed fail.
+
+A critic fail is confirmed only when a second fresh critic also marks that item fail on the current draft (testing.md, Critic review). Light has no second critic, so its critic is advisory. A confirmed fail must be fixed. You may not accept it yourself: only the user may, at hand-over (a gate), logged as "accepted by the user: reason". An unconfirmed fail does not block. Fix it or log "unconfirmed fail, left: reason". Never mark it passed.
 
 The baseline is reported, not gating. Self-tested results may be reported but never count toward run done.
 
@@ -73,7 +75,7 @@ The baseline is reported, not gating. Self-tested results may be reported but ne
 A gate is a point that needs a human decision:
 - a permission BRIEF.md does not grant;
 - a request to raise a cap or change tier;
-- hand-over (install or publish).
+- hand-over (install, publish, or accepting a confirmed critic fail).
 
 Design is not a gate. At a gate, ask once. If the user is away, stop and report. Never keep spending to wait for an answer.
 
@@ -87,7 +89,7 @@ Stop at the first of these, say which one it was, and set the ledger `Status:` l
 - A gate is reached and the user is away.
 - A required test cannot be run: report the draft as untested.
 
-On any stop, log the current round first. Unless you go on to hand-over, set `Status: stopped` and report plainly what still fails or is unconfirmed.
+On any stop, log the current round first. Unless you go on to hand-over, set `Status: stopped` and report plainly what still fails or is unconfirmed, including any open confirmed critic fail.
 
 ## Never
 

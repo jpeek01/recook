@@ -16,7 +16,7 @@ Allowed: [defaults: read project files; write inside recook-run/ and recook-run/
 Not allowed: everything not listed.
 
 ## Run done (ReCook default)
-Lint 0 errors. Trigger test at least 5 of 6 correct on each side. Dry run meets the new skill's done criteria below. Critic review has no fail. Baseline is reported, not gating. Self-tested results never count.
+Lint 0 errors. Trigger test at least 5 of 6 correct on each side. Dry run meets the new skill's done criteria below. Critic review has no confirmed fail. Baseline is reported, not gating. Self-tested results never count.
 Stricter rule from the user: [none / rule].
 
 ## The new skill's done criteria

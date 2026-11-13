@@ -35,9 +35,11 @@ Results:
 | Trigger test | [x of 6 should, y of 6 should-not correct; prompts from user / agent-written, unconfirmed] | judged (proxy) |
 | Dry run | [new skill's done criteria met: list] | [measured / judged] |
 | Baseline | [better / same / worse, per criterion / not run (tier)] | judged |
-| Critic | [fails and top problems] | judged |
+| Critic | [fails and top problems; second critic: items checked / not run (tier or round 1)] | judged |
 
-Retest: [test, result / none]
+Critic, confirmed fails: [item: fixed / open / accepted by the user: reason / none]
+Critic, unconfirmed fails: [item: fixed / unconfirmed fail, left: reason / none]
+Retest: [test, result / none / spare run used by second critic]
 Not run this round: [what, and why]
 Self-tested (never counts as passed): [what / none]
 Off-task tool calls: [test, tool, what was done about it / none]

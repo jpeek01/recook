@@ -78,6 +78,7 @@ List what the user allows, one line each, in BRIEF.md. Anything not listed is no
 ## Adapting
 
 - Light: use the short design path in design-coach.md.
+- Light: its critic is advisory. It has a single critic, so no critic fail is confirmed or blocks run done (testing.md).
 - Standard and Deep: ask the full design questions, unless the short path applies.
 - Which tests each tier runs is in testing.md.
 
