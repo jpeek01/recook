@@ -6,6 +6,12 @@ This is a fork of [Cook](https://github.com/Leonxlnx/cook) by Leon Lin ([LexnLin
 
 I built it specifically for me, as an experiment. I liked the idea of Cook and want to build other skills like it to experiment with. You are free to use it under the same MIT license as Cook.
 
+## About this project
+
+I am a Senior Technical Product Manager by trade, not a software engineer. This repository was built entirely by AI: Claude Fable 5.2 acted as the orchestrator, Opus 5.5 as the coding subagent, and Sonnet 5.5 handled reading and writing the documents.
+
+I make no claims about this repository, including that it works. I have not yet run user acceptance testing on it. Use it at your own risk.
+
 It is not endorsed by or connected to the original author, and it is not a replacement for Cook. If you want Cook, go to the [original repository](https://github.com/Leonxlnx/cook).
 
 ## What ReCook is
