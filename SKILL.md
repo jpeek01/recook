@@ -66,7 +66,7 @@ The run is done when all of these hold for the current draft. This is the defaul
 - Dry run: meets the new skill's done criteria in BRIEF.md.
 - Critic review: no confirmed fail.
 
-A critic fail is confirmed only when a second fresh critic also marks that item fail on the current draft (testing.md, Critic review). Light has no second critic, so its critic is advisory. A confirmed fail must be fixed. You may not accept it yourself: only the user may, at hand-over (a gate), logged as "accepted by the user: reason". An unconfirmed fail does not block. Fix it or log "unconfirmed fail, left: reason". Never mark it passed.
+A critic fail is confirmed only when a second fresh critic also marks that item fail on the current draft (testing.md, Critic review). Light has no second critic, so its critic is advisory. In Standard and Deep, a round-1 critic fail has no second critic yet: run done is not met, and the next round reviews it. A confirmed fail must be fixed. You may not accept it yourself: only the user may, at hand-over (a gate), logged as "accepted by the user: reason". An unconfirmed fail does not block. Fix it or log "unconfirmed fail, left: reason". Never mark it passed.
 
 The baseline is reported, not gating. Self-tested results may be reported but never count toward run done.
 

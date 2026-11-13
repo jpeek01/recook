@@ -38,6 +38,7 @@ Results:
 | Critic | [fails and top problems; second critic: items checked / not run (tier or round 1)] | judged |
 
 Critic, confirmed fails: [item: fixed / open / accepted by the user: reason / none]
+Critic, pending fails (round 1 of Standard or Deep; run done not met): [item / none]
 Critic, unconfirmed fails: [item: fixed / unconfirmed fail, left: reason / none]
 Retest: [test, result / none / spare run used by second critic]
 Not run this round: [what, and why]

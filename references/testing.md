@@ -150,11 +150,11 @@ Judged results only.
 
 ### Second critic
 
-A critic fail blocks run done only if a second fresh critic also marks that item fail on the current draft. That is a confirmed fail. A fail that no second critic confirmed is unconfirmed. It does not block, but it is logged in the ledger and listed in the hand-over report. Run the second critic on the same draft as the first, before the round's fix.
+A critic fail blocks run done only if a second fresh critic also marks that item fail on the current draft. That is a confirmed fail. A fail that a second critic reviewed but did not confirm is unconfirmed. It does not block, but it is logged in the ledger and listed in the hand-over report. A fail that no second critic has reviewed yet is pending: run done is not met until the next round reviews it. Run the second critic on the same draft as the first, before the round's fix.
 
-- Light: no second critic. Every critic fail is unconfirmed. Light's critic is advisory.
-- Standard: round 1 has no spare run, so its critic fails are unconfirmed. From round 2, if the critic marked any fail, use the round's spare run for a second critic that reviews only the failed items. Give it the skill folder and those items, nothing else. If no item was marked fail, the spare run may go to a retest.
-- Deep: round 1 has one critic, so its fails are unconfirmed. From round 2, a second critic reviews the full checklist each round, with the prompt above. A fail is confirmed only if both critics fail the same item.
+- Light: no second critic. Every critic fail is unconfirmed and never pending. Light's critic is advisory.
+- Standard: round 1 has no spare run, so a round-1 critic fail is pending: do not call the run done, and go on to round 2. From round 2, if the critic marked any fail, use the round's spare run for a second critic that reviews only the failed items. Give it the skill folder and those items, nothing else. If no item was marked fail, the spare run may go to a retest.
+- Deep: round 1 has one critic, so a round-1 critic fail is pending: do not call the run done, and go on to round 2. From round 2, a second critic reviews the full checklist each round, with the prompt above. A fail is confirmed only if both critics fail the same item.
 
 Never give the second critic the first critic's verdict or evidence, and do not say who built the skill.
 
