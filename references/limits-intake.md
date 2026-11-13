@@ -10,7 +10,7 @@ After the closing line you ask nothing, except at a gate (see SKILL.md, Gates).
 
 Before you ask: read what the user already gave you (the prompt, files, a filled brief). Do not ask what is answered. The user can answer by number or reply "defaults".
 
-If the user is away or tells you to decide: use the defaults below and decide the design questions yourself. Log each guess in the ledger's Decisions list, marked "unconfirmed". The run stops before hand-over and reports what is unconfirmed.
+If the user is away, follow SKILL.md step 1.
 
 ## Limits questions and defaults
 
@@ -19,7 +19,7 @@ If the user is away or tells you to decide: use the defaults below and decide th
 | 1 | Cost tier: light, standard or deep? | Standard |
 | 2 | Time cap? | The tier's time cap |
 | 3 | Round cap? | The tier's round cap |
-| 4 | What must be true when the new skill has done its job? 3 to 5 rules, checked by a command or test where possible. | I draft 3 to 5 from your answers (see design-coach.md). If you are away, they are marked "agent-written, unconfirmed". |
+| 4 | What must be true when the new skill has done its job? 3 to 5 rules, checked by a command or test where possible. | I draft 3 to 5 from your answers (see design-coach.md). |
 | 5 | One example of the output you want: a finished sample, or "none yet"? | None yet. BRIEF.md records that the output format is a guess. |
 | 6 | If you are away when I need a decision? | Stop and report. Do not keep spending. |
 | 7 | What may I do while building? | The default permissions below. |
@@ -68,9 +68,10 @@ Default permissions (the "defaults" answer to question 7):
 - Before a new run, move a stopped or finished run to `recook-archive/<date>/`.
 - Run the bundled lint script: `node scripts/check-skill.mjs`, from this skill's folder.
 - Start fresh test subagents that write only in `recook-run/scratch/`, are read-only on real data, and use no network.
-- Let those test subagents run `node` on the draft skill's own scripts, with output only in `recook-run/scratch/`. Nothing else may be run as a shell command.
+- Let those test subagents run `node` on the draft skill's own scripts, and the plain read-only commands the draft's steps name (such as `wc` or `grep`), with output only in `recook-run/scratch/`. Nothing else may be run as a shell command.
+- Tell those subagents to send no messages and start no sessions or agents.
 
-Not allowed unless the user grants it: install, publish, push, network, connectors, editing .gitignore (question 8), writing anywhere else, and any other shell command.
+Not allowed unless the user grants it: install, publish, push, network, connectors, editing .gitignore (question 8), writing anywhere else, and any other shell command. Also not allowed: using a cloud or remote session tool, or any tool that acts outside the project, as a stand-in for test subagents (testing.md).
 
 List what the user allows, one line each, in BRIEF.md. Anything not listed is not allowed. When a step needs something unlisted, that is a gate: ask once, or stop and report if the user is away.
 

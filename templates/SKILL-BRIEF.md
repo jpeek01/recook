@@ -2,6 +2,8 @@
 
 Written once after the intake. Keep it short. Every line steers the run, so leave out what does not apply. Counts of rounds and subagent runs used live in the ledger header (`recook-run/ROUNDS.md`), not here.
 
+If you filled a field by guessing, add "(unconfirmed)" after it. The "Unconfirmed design answers" line below is the summary.
+
 ## Limits
 Tier: [light / standard / deep]. Estimates are rough, not prices.
 Rounds: at most [N]. Subagent runs: at most [N] per round, [N] in total.

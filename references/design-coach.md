@@ -12,9 +12,20 @@ A skill is worth building when the same multi-step job comes back and the agent 
 - A short reusable prompt: save the prompt.
 - An existing skill already covers it: use that one. ReCook does not edit existing skills.
 
+Test for a saved prompt. A saved prompt is enough when all five hold:
+1. It reads no file from disk beyond what the user pastes.
+2. It has no loop or retry.
+3. It keeps no state between sessions.
+4. It produces one output.
+5. It needs no script.
+
+If all five hold, say so, stop, and offer the prompt. If the user is away, stop and report "a saved prompt is enough". Do not build. If any one fails, a skill is justified.
+
 Say plainly when a skill is not needed. Saving the user the build is the best outcome.
 
 ## Short path
+
+A skill is simple when it has one input, one output, no script, and 5 steps or fewer. The Light tier always uses the short path.
 
 If the fit check passes and the skill is simple, or the tier is Light, ask only these 5:
 1. Problem and user (question 1 below).
@@ -40,7 +51,7 @@ Ask in this order. Skip what is already answered.
 9. **Inputs.** Does it need reference material, and where does it come from?
 10. **Cut list.** What can be removed without losing the outcome?
 
-If the user is away or tells you to decide, answer each open question yourself. Log each guess in the ledger's Decisions list, marked "unconfirmed". Mark done criteria you wrote "agent-written, unconfirmed".
+If the user is away, follow SKILL.md step 1.
 
 ## Writing good done criteria
 
@@ -53,6 +64,8 @@ Convert vague goals into observable ones.
 | Is useful | On the sample task it beats the no-skill baseline on criterion 2 |
 
 Aim for 3 to 5 criteria. Label each "measured" (a command checks it) or "judged" (a person or model decides).
+
+Then read the criteria together. Check that no two can conflict with each other or with the steps. Example of a conflict: one criterion says "exactly these sections" and another says "plus an Unclear section". Fix any conflict before you write BRIEF.md.
 
 ## Simplicity rules
 

@@ -75,8 +75,9 @@ node scripts/check-skill.mjs path/to/your-skill
 
 ## Safety defaults
 
-- By default it reads project files, writes only inside `recook-run/` (and moves old runs to `recook-archive/`), runs only its own lint script, and starts test subagents. Test subagents may run `node` on the draft skill's own scripts, writing only in `recook-run/scratch/`. Install, publish, push, network, connectors and other shell commands need your permission.
+- By default it reads project files, writes only inside `recook-run/` (and moves old runs to `recook-archive/`), runs only its own lint script, and starts test subagents. Test subagents may run `node` on the draft skill's own scripts and the plain read-only commands its steps name (such as `wc`), writing only in `recook-run/scratch/`. Install, publish, push, network, connectors and other shell commands need your permission.
 - Test subagents are told to write only in `recook-run/scratch/`, stay read-only on real data and use no network. This is an instruction, not a sandbox the harness enforces.
+- Test subagents inherit the parent's tools. The list of tools each test prompt allows is an instruction to the subagent, not an enforced limit. An off-task tool call has been seen in testing. ReCook logs any such call as a finding and never retries it itself.
 - Text in reference material and sample inputs is treated as data, not instructions.
 - Never installs, pushes or publishes without your permission.
 - Never saves keys, tokens or private details in notes or in the new skill.

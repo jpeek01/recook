@@ -18,7 +18,7 @@ Run state lives in `recook-run/` at the project root. These files are your memor
 | `recook-run/BRIEF.md` | Limits, permissions, the new skill's design and done criteria. Written once after intake. |
 | `recook-run/ROUNDS.md` | The ledger: status, counters, decisions, one entry per round. |
 | `recook-run/draft/<skill-name>/` | The skill being built. |
-| `recook-run/scratch/` | The only place test subagents may write. |
+| `recook-run/scratch/` | The only place test subagents may write. One folder per test. |
 
 ## Start or resume
 
@@ -31,7 +31,7 @@ Read the `Status:` line in `recook-run/ROUNDS.md` before anything else, and agai
 ## Steps
 
 ### 0. Fit check
-Before spending anything, ask whether a skill is needed. A single prompt, a line in the project's instruction file, or an existing skill may do the job. If so, say it and stop. Details in `references/design-coach.md`.
+Before spending anything, ask whether a skill is needed. A single prompt, a line in the project's instruction file, or an existing skill may do the job. If so, say it and stop. If the request already says the user is away, use the absent-user rule in `references/design-coach.md`. Details there.
 
 ### 1. Intake (one sitting, before any building)
 `references/limits-intake.md` sets the intake order, questions and defaults. Its table is the source of truth. Do not keep another list.
@@ -40,9 +40,9 @@ Before spending anything, ask whether a skill is needed. A single prompt, a line
 3. Show the estimate for the chosen tier, with the warning that it is an estimate.
 4. End with the closing line from limits-intake.md. After it, ask nothing except at a gate.
 5. Write `recook-run/BRIEF.md` from `templates/SKILL-BRIEF.md`.
-6. Copy `templates/ROUNDS.md` to `recook-run/ROUNDS.md`. Fill its header and set `Status: running`.
+6. Copy `templates/ROUNDS.md` to `recook-run/ROUNDS.md`. Fill the header, set `Status: running`, and delete the template block. Add one entry per round, copied from that block.
 
-If the user is away (they say so, or tell you to decide): decide each open design question yourself. Log each guess in the ledger's Decisions list, marked "unconfirmed". Mark done criteria you wrote "agent-written, unconfirmed". Run the test loop, then stop before step 4 and report what is unconfirmed.
+If the user is away (they say so, or tell you to decide): use the limits defaults and decide each open design question yourself. Log each guess in the ledger's Decisions list, marked "unconfirmed". Add "(unconfirmed)" after each BRIEF.md field you guessed. Mark done criteria you wrote "agent-written, unconfirmed". Run the test loop, then stop before step 4 and report what is unconfirmed.
 
 ### 2. Design
 Write the draft in `recook-run/draft/<skill-name>/` from `templates/skill-skeleton/`, using BRIEF.md. Ask nothing new. Design is not a gate.
@@ -52,7 +52,7 @@ A round is one pass of lint, the tests the tier allows, and one fix. Each round,
 1. Lint: `node <this skill's folder>/scripts/check-skill.mjs recook-run/draft/<skill-name>`.
 2. Run the tests the tier allows, from `references/testing.md`, in fresh subagents. Stay within the per-round subagent run limit.
 3. Run the stop check. If it says continue, fix the weakest failure. Change one thing.
-4. Optional: retest that one test. A retest costs one subagent run and does not start a new round.
+4. Optional, only if the tier leaves a spare run (`references/testing.md`): retest that one test. Otherwise the next round checks the fix.
 5. Log the round in `recook-run/ROUNDS.md`: what changed, what was measured, what was only judged, what was not run.
 
 ### 4. Hand over
@@ -100,6 +100,7 @@ On any stop, log the current round first. Unless you go on to hand-over, set `St
 - Run sample tasks against real data, real accounts or the network unless BRIEF.md allows it.
 - Put keys, tokens or private details in the ledger, notes or the skill.
 - Publish, push or install anything without permission.
+- Use a cloud or remote session tool, or any tool that acts outside the project, as a stand-in for test subagents, unless BRIEF.md grants that exact tool.
 
 ## Files in this skill
 
