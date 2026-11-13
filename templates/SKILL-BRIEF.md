@@ -7,20 +7,20 @@ If you filled a field by guessing, add "(unconfirmed)" after it. The "Unconfirme
 ## Limits
 Tier: [light / standard / deep]. Estimates are rough, not prices.
 Rounds: at most [N]. Subagent runs: at most [N] per round, [N] in total.
+Subagent models: [cheap / moderate / heavy / harness default].
 Time cap: [duration]. Started: [timestamp].
-Estimated cost range: [$x to $y] (uncalibrated; model and plan: [answer / not known]).
-If the user is away: [stop and report].
+Estimated cost range: [$x to $y] (uncalibrated[; Heavy subagent models: likely several times higher]).
 
 ## Permissions
-Allowed: [defaults: read project files; write inside recook-run/ and recook-run/scratch/; archive an old run to recook-archive/; run node scripts/check-skill.mjs; fresh test subagents that write only in recook-run/scratch/, read-only on real data, no network, and may run node on the draft skill's own scripts] [plus any grant: shell / network / connectors: names / .gitignore edit / install / publish].
+Allowed: [defaults: read project files; write inside recook-run/ and recook-run/scratch/; move a stopped or finished run to recook-archive/<date>/ before a new run; run `node <this skill's folder>/scripts/check-skill.mjs recook-run/draft/<skill-name>` from the project root; read the clock with `date` and check stray writes with `git status --short`, no other shell command; fresh test subagents that write only in recook-run/scratch/, read-only on real data, no network, that may run node on the draft skill's own scripts and the plain read-only commands the draft's steps name (such as wc or grep), and are told to send no messages and start no sessions or agents] [plus any grant: shell / network / connectors: names / install / publish].
 Not allowed: everything not listed.
 
 ## Run done (ReCook default)
-Lint 0 errors. Trigger test at least 5 of 6 correct on each side. Dry run meets the new skill's done criteria below. Critic review has no confirmed fail. Baseline is reported, not gating. Self-tested results never count.
+Lint 0 errors. Trigger test at least 5 of 6 correct on each side. Dry run meets every done criterion below that can be checked without a real side effect; the rest are "not run (side effect)" and listed first as untested. Critic review has no confirmed fail and no pending fail (Light's checklist review is advisory). Baseline is reported, not gating. Self-tested results never count.
 Stricter rule from the user: [none / rule].
 
 ## The new skill's done criteria
-Source: [user / agent-written, unconfirmed].
+Source: [user / agent-written, accepted by default / agent-written, unconfirmed].
 1. [criterion] (measured / judged)
 2. [criterion] (measured / judged)
 3. [criterion] (measured / judged)
@@ -38,9 +38,6 @@ Unconfirmed design answers: [none / see ledger Decisions].
 
 ## References
 [source: where it came from, read-only, what to use] or "no references".
-
-## Notes
-Design notes also saved to: [local recook-run/ only / Obsidian vault path / Notion page / nowhere].
 
 ## The user's words
 "[key lines of the request, verbatim]"

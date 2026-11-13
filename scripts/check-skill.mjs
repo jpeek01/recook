@@ -28,7 +28,8 @@ if (!existsSync(skillPath)) {
   process.exit(1);
 }
 
-const text = readFileSync(skillPath, 'utf8').replace(/\r\n/g, '\n');
+// A UTF-8 byte order mark is tolerated.
+const text = readFileSync(skillPath, 'utf8').replace(/^﻿/, '').replace(/\r\n/g, '\n');
 const lines = text.split('\n');
 // Line count does not include the empty string after a trailing newline.
 const counted = text.endsWith('\n') ? text.slice(0, -1) : text;
@@ -36,8 +37,10 @@ const lineCount = counted === '' ? 0 : counted.split('\n').length;
 
 // Parse simple YAML frontmatter: "key: value", quoted values, plain values
 // that continue on indented lines, and block scalars (>, |, >-, |- and similar).
+// Returns the values and any keys that appear more than once.
 function parseFrontmatter(fmLines) {
   const out = {};
+  const dupes = [];
   let i = 0;
   while (i < fmLines.length) {
     const m = /^([A-Za-z_][A-Za-z0-9_-]*):(?:[ \t]+(.*))?$/.exec(fmLines[i]);
@@ -70,52 +73,18 @@ function parseFrontmatter(fmLines) {
       const q = value[0];
       if ((q === '"' || q === "'") && value.length >= 2 && value.endsWith(q)) value = value.slice(1, -1).trim();
     }
+    if (Object.prototype.hasOwnProperty.call(out, key) && !dupes.includes(key)) dupes.push(key);
     out[key] = value;
     i = j;
   }
-  return out;
+  return { out, dupes };
 }
 
-// Frontmatter: first line "---", closing "---".
-let fm = {};
-let fmEnd = -1;
-if (lines[0] !== '---') {
-  err('SKILL.md must start with a "---" frontmatter line');
-} else {
-  fmEnd = lines.indexOf('---', 1);
-  if (fmEnd === -1) err('frontmatter has no closing "---"');
-  else fm = parseFrontmatter(lines.slice(1, fmEnd));
-}
-
-if (fm.name === undefined) err('frontmatter is missing "name"');
-else if (fm.name === '') err('frontmatter "name" is empty');
-else {
-  if (!/^[a-z0-9][a-z0-9-]*$/.test(fm.name)) err(`name "${fm.name}" should be lowercase letters, digits and hyphens`);
-  if (/\[[^\]\n]*\]/.test(fm.name)) err('name still contains a [placeholder]');
-  if (fm.name !== basename(root)) warn(`name "${fm.name}" differs from folder "${basename(root)}"`);
-}
-
-if (fm.description === undefined) err('frontmatter is missing "description"');
-else if (fm.description === '') err('frontmatter "description" is empty');
-else {
-  const words = fm.description.split(/\s+/).filter(Boolean).length;
-  if (words > 80) warn(`description is ${words} words; it loads every session, aim for under 60`);
-  if (/\[.*\]/s.test(fm.description)) err('description still contains a [placeholder]');
-  if (!/\bnot\b|\bdo not\b|\bdon't\b/i.test(fm.description)) warn('description does not say when NOT to use the skill');
-}
-
-if (lineCount > 120) warn(`SKILL.md is ${lineCount} lines; aim for under 120 and move detail to references/`);
-
-if (!/^#{1,3}\s.*(stop|done)/im.test(text)) err('no "Stop" or "Done" section found');
-if (!/^#{1,3}\s.*never/im.test(text)) warn('no "Never" section found');
-
-// Body placeholders: [like this] outside fenced code blocks and inline code.
-// Markdown links, reference links and task-list boxes are not placeholders.
-{
-  const bodyLines = fmEnd > 0 ? lines.slice(fmEnd + 1) : lines;
+// Lines outside fenced code blocks (``` or ~~~); fence lines themselves are dropped.
+function unfenced(ls) {
   const kept = [];
   let fence = null;
-  for (const l of bodyLines) {
+  for (const l of ls) {
     const f = /^\s*(`{3,}|~{3,})/.exec(l);
     if (f) {
       if (!fence) fence = f[1];
@@ -124,23 +93,81 @@ if (!/^#{1,3}\s.*never/im.test(text)) warn('no "Never" section found');
     }
     if (!fence) kept.push(l);
   }
-  const prose = kept.join('\n').replace(/`[^`\n]*`/g, '');
+  return kept;
+}
+
+// Placeholders: text in single square brackets, outside inline code, such as
+// [todo] or [What it does.]. Not placeholders: Markdown links and reference
+// links, escaped brackets, task-list boxes, [[wikilinks]], and index brackets
+// directly after a word character such as a[0].
+function placeholders(s) {
   const found = [];
-  for (const m of prose.matchAll(/(?<![\\\]])\[([^\]\n]+)\](?![(\[:])/g)) {
-    if (/^\s*[xX]?\s*$/.test(m[1])) continue;
+  const prose = s.replace(/`[^`\n]*`/g, '');
+  for (const m of prose.matchAll(/(?<![\\\]\[\w])\[([^\[\]\n]+)\](?![(\[\]:])/g)) {
+    if (/^\s*[xX]?\s*$/.test(m[1]) || m[1].endsWith('\\')) continue;
     found.push(m[0]);
   }
+  return found;
+}
+
+// Frontmatter: first line "---", closing "---" (trailing whitespace allowed).
+const isDelim = (l) => l.trimEnd() === '---';
+let fm = {};
+let fmEnd = -1;
+if (!isDelim(lines[0])) {
+  err('SKILL.md must start with a "---" frontmatter line');
+} else {
+  fmEnd = lines.findIndex((l, i) => i > 0 && isDelim(l));
+  if (fmEnd === -1) err('frontmatter has no closing "---"');
+  else {
+    const parsed = parseFrontmatter(lines.slice(1, fmEnd));
+    fm = parsed.out;
+    for (const k of parsed.dupes) err(`frontmatter key "${k}" appears more than once`);
+  }
+}
+
+if (fm.name === undefined) err('frontmatter is missing "name"');
+else if (fm.name === '') err('frontmatter "name" is empty');
+else {
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(fm.name)) {
+    err(`name "${fm.name}" should be lowercase letters and digits in groups joined by single hyphens`);
+  }
+  if (placeholders(fm.name).length) err('name still contains a [placeholder]');
+  if (fm.name !== basename(root)) warn(`name "${fm.name}" differs from folder "${basename(root)}"`);
+}
+
+if (fm.description === undefined) err('frontmatter is missing "description"');
+else if (fm.description === '') err('frontmatter "description" is empty');
+else {
+  const words = fm.description.split(/\s+/).filter(Boolean).length;
+  if (words > 80) warn(`description is ${words} words; it loads every session, keep it to 80 or fewer`);
+  if (placeholders(fm.description).length) err('description still contains a [placeholder]');
+  if (!/\bnot\b|\bdo not\b|\bdon't\b/i.test(fm.description)) warn('description does not say when NOT to use the skill');
+}
+
+if (lineCount > 120) warn(`SKILL.md is ${lineCount} lines; aim for under 120 and move detail to references/`);
+
+// Headings (levels 1-3) outside fenced code, matched on whole words.
+const bodyLines = unfenced(fmEnd > 0 ? lines.slice(fmEnd + 1) : lines);
+const headings = bodyLines.filter((l) => /^#{1,3}\s/.test(l));
+if (!headings.some((h) => /\b(stop|stops|stopping|done)\b/i.test(h))) err('no "Stop" or "Done" section found');
+if (!headings.some((h) => /\bnever\b/i.test(h))) warn('no "Never" section found');
+
+// Body placeholders outside fenced code blocks and inline code.
+{
+  const found = placeholders(bodyLines.join('\n'));
   if (found.length) {
     const shown = found.slice(0, 3).join(', ');
     warn(`SKILL.md body still contains ${found.length} [placeholder](s): ${shown}${found.length > 3 ? ', ...' : ''}`);
   }
 }
 
-// Paths in backticks that start with references/, templates/ or scripts/ must exist.
+// Backticked paths starting references/, templates/ or scripts/ (outside fenced
+// code) must exist. A #anchor and trailing .,;: are ignored; paths with [ < * or .. are skipped.
 const seen = new Set();
-for (const m of text.matchAll(/`((?:references|templates|scripts)\/[^`\s]+)`/g)) {
-  const rel = m[1].replace(/[.,;:]+$/, '');
-  if (seen.has(rel) || /[\[<*]/.test(rel)) continue;
+for (const m of unfenced(lines).join('\n').matchAll(/`((?:references|templates|scripts)\/[^`\s]+)`/g)) {
+  const rel = m[1].replace(/#.*$/, '').replace(/[.,;:]+$/, '');
+  if (seen.has(rel) || /[\[<*]|\.\./.test(rel)) continue;
   seen.add(rel);
   if (!existsSync(join(root, rel))) err(`mentioned file does not exist: ${rel}`);
 }
