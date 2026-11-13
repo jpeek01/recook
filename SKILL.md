@@ -113,4 +113,4 @@ On any stop, log the current round first. Unless you go on to hand-over, set `St
 | `templates/ROUNDS.md` | Step 1: copy to `recook-run/ROUNDS.md`. |
 | `templates/skill-skeleton/` | Step 2: the starting layout for the new skill. |
 | `scripts/check-skill.mjs` | Every round: structural checks on the draft. |
-| `scripts/check-skill.test.mjs` | Only when changing the lint script: `node --test scripts/`. |
+| `scripts/check-skill.test.mjs` | Only when changing the lint script: `node --test scripts/*.test.mjs`. |

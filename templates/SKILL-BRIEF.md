@@ -10,7 +10,7 @@ Estimated cost range: [$x to $y] (uncalibrated; model and plan: [answer / not kn
 If the user is away: [stop and report].
 
 ## Permissions
-Allowed: [defaults: read project files; write inside recook-run/ and recook-run/scratch/; archive an old run to recook-archive/; run node scripts/check-skill.mjs; fresh test subagents that write only in recook-run/scratch/, read-only on real data, no network] [plus any grant: shell / network / connectors: names / .gitignore edit / install / publish].
+Allowed: [defaults: read project files; write inside recook-run/ and recook-run/scratch/; archive an old run to recook-archive/; run node scripts/check-skill.mjs; fresh test subagents that write only in recook-run/scratch/, read-only on real data, no network, and may run node on the draft skill's own scripts] [plus any grant: shell / network / connectors: names / .gitignore edit / install / publish].
 Not allowed: everything not listed.
 
 ## Run done (ReCook default)

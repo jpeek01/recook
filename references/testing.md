@@ -78,6 +78,8 @@ Purpose: can an agent follow the skill and reach the new skill's done criteria?
 
 The sandbox is an instruction to the subagent, not a limit the harness enforces. A subagent can ignore it. Check `recook-run/scratch/` and the rest of the project after each dry run, and log anything written outside scratch.
 
+The subagent may run `node` on the draft skill's own scripts (for example its check script). It may not run any other shell command. Read each script before a dry run. A script that sends, posts, deploys or deletes falls under the next paragraph.
+
 **Skills with side effects.** If the skill sends, posts, deploys, deletes or changes anything outside its own files, use fixtures or mocks for that step, or mark the step "not run". Never dry-run a send, post, deploy or delete against real targets.
 
 Prompt:

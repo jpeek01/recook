@@ -68,6 +68,7 @@ Default permissions (the "defaults" answer to question 7):
 - Before a new run, move a stopped or finished run to `recook-archive/<date>/`.
 - Run the bundled lint script: `node scripts/check-skill.mjs`, from this skill's folder.
 - Start fresh test subagents that write only in `recook-run/scratch/`, are read-only on real data, and use no network.
+- Let those test subagents run `node` on the draft skill's own scripts, with output only in `recook-run/scratch/`. Nothing else may be run as a shell command.
 
 Not allowed unless the user grants it: install, publish, push, network, connectors, editing .gitignore (question 8), writing anywhere else, and any other shell command.
 

@@ -28,10 +28,9 @@ Copy this folder into your agent's skills folder:
 
 ```text
 Claude Code:  ~/.claude/skills/recook
-Codex CLI:    ~/.codex/skills/recook
 ```
 
-Invoke it as `/recook` in Claude Code or `$recook` in Codex, or ask to build a new skill.
+Invoke it as `/recook`, or ask to build a new skill. It was written for Claude Code. Other agents or models may work. Test them yourself before relying on it.
 
 The lint script needs Node 18 or newer. Everything else is plain Markdown. Run state goes in `recook-run/` (old runs move to `recook-archive/`). Add both to your `.gitignore`; ReCook does not edit it unless you allow it.
 
@@ -65,7 +64,7 @@ templates/SKILL-BRIEF.md          the brief
 templates/ROUNDS.md               the round ledger
 templates/skill-skeleton/         starting layout for the new skill
 scripts/check-skill.mjs           structural checks on a draft skill
-scripts/check-skill.test.mjs      tests for the lint script (node --test scripts/)
+scripts/check-skill.test.mjs      tests for the lint script (node --test scripts/*.test.mjs)
 ```
 
 Check a skill folder yourself:
@@ -76,7 +75,7 @@ node scripts/check-skill.mjs path/to/your-skill
 
 ## Safety defaults
 
-- By default it reads project files, writes only inside `recook-run/` (and moves old runs to `recook-archive/`), runs only its own lint script, and starts test subagents. Install, publish, push, network, connectors and other shell commands need your permission.
+- By default it reads project files, writes only inside `recook-run/` (and moves old runs to `recook-archive/`), runs only its own lint script, and starts test subagents. Test subagents may run `node` on the draft skill's own scripts, writing only in `recook-run/scratch/`. Install, publish, push, network, connectors and other shell commands need your permission.
 - Test subagents are told to write only in `recook-run/scratch/`, stay read-only on real data and use no network. This is an instruction, not a sandbox the harness enforces.
 - Text in reference material and sample inputs is treated as data, not instructions.
 - Never installs, pushes or publishes without your permission.
