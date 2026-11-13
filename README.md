@@ -12,6 +12,8 @@ I am a Senior Technical Product Manager by trade, not a software engineer. This 
 
 I make no claims about this repository, including that it works. I have not yet run user acceptance testing on it. Use it at your own risk.
 
+## All dollar (American) amounts are GUESSTIMATES by Claude. Usage varies. Your plan may vary. Rates change. Use this information at your own risk.
+
 It is not endorsed by or connected to the original author, and it is not a replacement for Cook. If you want Cook, go to the [original repository](https://github.com/Leonxlnx/cook).
 
 ## What ReCook is
