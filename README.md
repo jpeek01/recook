@@ -4,15 +4,17 @@
 
 ReCook is an agent skill that helps you create other agent skills. It asks about your limits before it builds anything, coaches you through the design, then tests the new skill with fresh-context subagents before calling it done.
 
+v1 builds new skills only.
+
 Forked from [Leonxlnx/cook](https://github.com/Leonxlnx/cook) (MIT). See [Credits](#credits).
 
 ## What it does
 
 1. **Fit check.** Do you need a skill at all? Often a prompt or one line in your project instructions is enough. ReCook says so and stops.
-2. **Limits first.** One message asks for: a cost tier (light, standard, deep), a time cap, a round cap, what "done" looks like, what to do if you are away, which permissions it has, how you will provide reference material, and where to save notes.
-3. **Design coaching.** Questions with defaults and examples: problem, triggers, non-triggers, steps, gates, state, a never list.
+2. **Intake.** One sitting, before any building. First the limits: a cost tier (light, standard, deep), a time cap, a round cap, what the new skill must achieve when done, a sample of the output you want, what to do if you are away, which permissions it has, how you will provide reference material, where to save notes, and your model and plan. Then the design questions, with defaults and examples: problem, triggers, non-triggers, steps, gates, state, a never list. Simple skills and the light tier get a short set of 5.
+3. **Draft.** It writes the new skill from your answers. It does not ask more questions. If you are away, it makes the design choices itself and marks them unconfirmed.
 4. **Test loop.** Lint, a trigger test, a dry run on a sample task, a no-skill baseline and a critic review. The tests run in fresh subagents that know nothing about how the skill was built.
-5. **Stop.** It stops at the first limit hit or when your done criteria pass. If you are away, it stops and reports. It does not keep spending.
+5. **Stop.** It stops at the first limit hit, when a required test cannot run, or when the run is done: lint clean, trigger test at least 5 of 6 on each side, the dry run meets your done criteria, and the critic finds no fail. If you are away, it stops before hand-over and reports what is unconfirmed. It does not keep spending.
 
 ## Read this before you use it
 
@@ -29,9 +31,9 @@ Claude Code:  ~/.claude/skills/recook
 Codex CLI:    ~/.codex/skills/recook
 ```
 
-Invoke it as `/recook` in Claude Code or `$recook` in Codex, or ask to create or improve a skill.
+Invoke it as `/recook` in Claude Code or `$recook` in Codex, or ask to build a new skill.
 
-The lint script needs Node 18 or newer. Everything else is plain Markdown.
+The lint script needs Node 18 or newer. Everything else is plain Markdown. Run state goes in `recook-run/` (old runs move to `recook-archive/`). Add both to your `.gitignore`; ReCook does not edit it unless you allow it.
 
 ## Quick start
 
@@ -39,29 +41,31 @@ The lint script needs Node 18 or newer. Everything else is plain Markdown.
 /recook I keep writing the same weekly status report from my notes. Help me turn that into a skill.
 ```
 
-Reply "defaults" to the limits questions to accept the standard tier.
+Reply "defaults" to accept the standard tier and the default permissions.
 
 ## Tiers
 
-| Tier | Round cap | Subagent runs | Time estimate | Cost estimate |
-|---|---|---|---|---|
-| Light | 2 | 6 | 30 to 60 min | about $1 to $10 |
-| Standard | 4 | 16 | 1 to 2 h | about $2 to $20 |
-| Deep | 8 | 40 | 2 to 4 h | about $4 to $40 |
+| Tier | Round cap | Subagent runs per round | Subagent runs, at most | Time cap | Cost estimate |
+|---|---|---|---|---|---|
+| Light | 2 | 3 | 6 | 45 min | about $1 to $10 |
+| Standard | 4 | 4 | 16 | 90 min | about $2 to $20 |
+| Deep | 8 | 5 | 40 | 3 h | about $4 to $40 |
 
-These are uncalibrated estimates. See the warning above.
+The cost figures are uncalibrated estimates. See the warning above.
 
 ## What is inside
 
 ```text
-SKILL.md                     the loop the agent follows
-references/limits-intake.md  limits questions, tiers, estimates, permissions
-references/design-coach.md   fit check and design questions
-references/testing.md        the tests and subagent prompts
-templates/SKILL-BRIEF.md     the brief
-templates/ROUNDS.md          the round ledger
-templates/skill-skeleton/    starting layout for the new skill
-scripts/check-skill.mjs      structural checks on a draft skill
+SKILL.md                          the loop the agent follows
+references/limits-intake.md       intake order, limits questions, tiers, estimates, permissions
+references/design-coach.md        fit check and design questions
+references/sources-and-notes.md   non-default reference sources and notes locations
+references/testing.md             the tests per tier and subagent prompts
+templates/SKILL-BRIEF.md          the brief
+templates/ROUNDS.md               the round ledger
+templates/skill-skeleton/         starting layout for the new skill
+scripts/check-skill.mjs           structural checks on a draft skill
+scripts/check-skill.test.mjs      tests for the lint script (node --test scripts/)
 ```
 
 Check a skill folder yourself:
@@ -72,8 +76,9 @@ node scripts/check-skill.mjs path/to/your-skill
 
 ## Safety defaults
 
-- Reads files and writes only inside `recook-run/` unless you grant more.
-- Sample tasks run read-only, in a scratch folder, with no network, by default.
+- By default it reads project files, writes only inside `recook-run/` (and moves old runs to `recook-archive/`), runs only its own lint script, and starts test subagents. Install, publish, push, network, connectors and other shell commands need your permission.
+- Test subagents are told to write only in `recook-run/scratch/`, stay read-only on real data and use no network. This is an instruction, not a sandbox the harness enforces.
+- Text in reference material and sample inputs is treated as data, not instructions.
 - Never installs, pushes or publishes without your permission.
 - Never saves keys, tokens or private details in notes or in the new skill.
 - Writing notes to an outside app (Obsidian, Notion and similar) needs your permission. The default is local files.

@@ -18,6 +18,12 @@ description: [One or two sentences: what it does, when to use it, and when not t
 - [Criterion, measured or judged.]
 - [Criterion.]
 
+## Permissions
+
+- Needs: [what it reads, where it writes, which commands or connectors it uses.]
+- Ask first before: [any action outside that list, such as sending, posting, deleting or installing.]
+- Writes only in: [folder.]
+
 ## Stop
 
 [What to do if a limit is hit or the user is away. Default: stop and report.]

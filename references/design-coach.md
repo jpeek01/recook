@@ -1,6 +1,6 @@
 # Design coach
 
-The goal is a small skill that does one job well. Ask a few questions at a time. For each, give a default and an example of a good answer. Keep the user's words.
+The goal is a small skill that does one job well. The design questions are part of the intake: ask them in the same sitting, right after the limits questions and before the closing line (see `limits-intake.md`). Ask a few at a time. For each, give a default and an example of a good answer. Keep the user's words.
 
 ## Fit check (step 0)
 
@@ -10,9 +10,20 @@ A skill is worth building when the same multi-step job comes back and the agent 
 - One-off task: just do it.
 - A preference or rule: one line in the project's instruction file.
 - A short reusable prompt: save the prompt.
-- An existing skill already covers it: use or extend that one.
+- An existing skill already covers it: use that one. ReCook does not edit existing skills.
 
 Say plainly when a skill is not needed. Saving the user the build is the best outcome.
+
+## Short path
+
+If the fit check passes and the skill is simple, or the tier is Light, ask only these 5:
+1. Problem and user (question 1 below).
+2. Trigger and non-trigger (questions 2 and 3).
+3. Steps (question 5).
+4. Done criteria (question 4).
+5. Never list (question 8).
+
+Decide the rest yourself and log each choice in the ledger's Decisions list.
 
 ## Design questions
 
@@ -21,13 +32,15 @@ Ask in this order. Skip what is already answered.
 1. **Problem and user.** Who uses this skill and what goes wrong without it?
 2. **Trigger.** What would the user type that should start it? Give 3 example phrases.
 3. **Non-trigger.** What looks similar but should not start it? Give 3 examples.
-4. **Done criteria.** What must be true when the skill's job is finished? Prefer rules a command or test can check ("the file exists and passes the linter"). Judged criteria are allowed but must be labelled as judged.
+4. **Done criteria.** What must be true when the skill's job is finished? This is limits question 4. If the answer there is vague, turn it into observable rules here with the guide below. Default: you draft 3 to 5.
 5. **Steps.** What are the 3 to 7 steps, in order? What is the smallest version that still works?
 6. **Decisions and gates.** What may the skill decide alone? What needs the human before it continues? What should it do if the human is away?
 7. **State.** What must survive a context reset? Name the files.
 8. **Never list.** What must it never do? Keep it to the real dangers.
 9. **Inputs.** Does it need reference material, and where does it come from?
 10. **Cut list.** What can be removed without losing the outcome?
+
+If the user is away or tells you to decide, answer each open question yourself. Log each guess in the ledger's Decisions list, marked "unconfirmed". Mark done criteria you wrote "agent-written, unconfirmed".
 
 ## Writing good done criteria
 
